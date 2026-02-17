@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedVend | Doctor Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDK (compat version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="dashboard-page doctor-theme">
+
+  <!-- ============================================
+       SIDEBAR NAVIGATION
+  ============================================ -->
+  <aside class="sidebar doctor-sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">MedVend</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+      <a href="#prescribe" class="nav-item">
+        <span class="nav-icon">✍️</span> Prescribe
+      </a>
+      <a href="#search" class="nav-item">
+        <span class="nav-icon">🔍</span> Search Patient
+      </a>
+    </nav>
+
+    <div class="sidebar-role">
+      <span class="role-badge doctor">Doctor</span>
+    </div>
+  </aside>
+
+  <!-- ============================================
+       MAIN CONTENT AREA
+  ============================================ -->
+  <main class="main-content">
+
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Doctor Dashboard</h1>
+        <p>Manage and issue patient prescriptions</p>
+      </div>
+      <div class="topbar-actions">
+        <span class="user-greeting">Dr. <strong id="doctorName">...</strong></span>
+        <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         PATIENT SEARCH SECTION
+    ========================================== -->
+    <section class="section" id="search">
+      <h2 class="section-title">Search Patient</h2>
+      <p class="section-sub">Find a patient by their registered email address to view or update their prescription.</p>
+
+      <div class="search-bar">
+        <input
+          type="email"
+          id="searchEmail"
+          placeholder="Enter patient email address..."
+          class="search-input"
+        />
+        <button class="btn btn-primary" onclick="searchPatient()">
+          Search
+        </button>
+      </div>
+
+      <!-- Search result: shows patient details when found -->
+      <div id="searchResult" style="display:none;">
+        <div class="patient-found-card">
+          <div class="patient-badge">✅ Patient Found</div>
+          <div class="patient-details-grid">
+            <div>
+              <span class="detail-label">Name:</span>
+              <span class="detail-value" id="foundName">—</span>
+            </div>
+            <div>
+              <span class="detail-label">Email:</span>
+              <span class="detail-value" id="foundEmail">—</span>
+            </div>
+            <div>
+              <span class="detail-label">Medical Card ID:</span>
+              <span class="detail-value mono" id="foundCardID">—</span>
+            </div>
+            <div>
+              <span class="detail-label">UID:</span>
+              <span class="detail-value mono small" id="foundUID">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patient not found message -->
+      <div id="notFoundMsg" class="error-msg" style="display:none;">
+        ❌ No patient found with that email. Make sure the patient has registered.
+      </div>
+    </section>
+
+    <!-- ==========================================
+         PRESCRIPTION FORM
+         Doctors fill this in and submit to Firestore
+    ========================================== -->
+    <section class="section" id="prescribe">
+      <h2 class="section-title">Issue / Update Prescription</h2>
+      <p class="section-sub">
+        Fill in the prescription details below. Search for a patient first, then submit to save their prescription to the cloud.
+      </p>
+
+      <form id="prescriptionForm" class="prescrip-form" onsubmit="return false;">
+
+        <!-- Patient UID (read only — auto-filled after search) -->
+        <div class="form-group">
+          <label for="patientUID">Patient UID <span class="optional">(auto-filled from search)</span></label>
+          <input
+            type="text"
+            id="patientUID"
+            placeholder="Search a patient above first..."
+            readonly
+            class="readonly-input"
+          />
+        </div>
+
+        <!-- Medicine Name(s) -->
+        <div class="form-group">
+          <label for="medicineInput">Medicine Name(s)</label>
+          <input
+            type="text"
+            id="medicineInput"
+            placeholder="e.g. Paracetamol, Amoxicillin (comma-separated)"
+            required
+          />
+          <small class="hint">Separate multiple medicines with commas</small>
+        </div>
+
+        <!-- Dosage -->
+        <div class="form-group">
+          <label for="dosageInput">Dosage</label>
+          <input
+            type="text"
+            id="dosageInput"
+            placeholder="e.g. 500mg twice daily"
+            required
+          />
+        </div>
+
+        <!-- Refill Limit -->
+        <div class="form-group">
+          <label for="refillInput">Refill Limit</label>
+          <input
+            type="number"
+            id="refillInput"
+            placeholder="e.g. 3"
+            min="0"
+            max="20"
+            required
+          />
+          <small class="hint">Number of times patient can refill (0 = no refill)</small>
+        </div>
+
+        <!-- Expiry Date -->
+        <div class="form-group">
+          <label for="expiryInput">Prescription Expiry Date</label>
+          <input
+            type="date"
+            id="expiryInput"
+            required
+          />
+        </div>
+
+        <!-- Success/Error messages -->
+        <div id="prescripSuccess" class="success-msg" style="display:none;"></div>
+        <div id="prescripError"   class="error-msg"   style="display:none;"></div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          id="saveBtn"
+          class="btn btn-primary btn-full"
+          onclick="savePrescription()"
+        >
+          💾 Save Prescription to Cloud
+        </button>
+
+      </form>
+    </section>
+
+    <!-- ==========================================
+         RECENT PRESCRIPTIONS (optional info section)
+    ========================================== -->
+    <section class="section">
+      <h2 class="section-title">How Prescriptions Reach the Vending Machine</h2>
+      <div class="info-steps">
+        <div class="info-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Doctor saves prescription → stored in Firebase Firestore</div>
+        </div>
+        <div class="info-step">
+          <div class="step-num">2</div>
+          <div class="step-text">Patient visits vending machine, scans Medical Card ID</div>
+        </div>
+        <div class="info-step">
+          <div class="step-num">3</div>
+          <div class="step-text">Machine queries Firestore REST API with the Card ID</div>
+        </div>
+        <div class="info-step">
+          <div class="step-num">4</div>
+          <div class="step-text">Prescription verified → Sensors dispense medication</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- App JS handles auth check + Firestore operations -->
+  <script src="app.js"></script>
+
+</body>
+</html>

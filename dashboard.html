@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedVend | Patient Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- Firebase SDK (compat version) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="dashboard-page">
+
+  <!-- ============================================
+       SIDEBAR NAVIGATION
+  ============================================ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">MedVend</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active">
+        <span class="nav-icon">🏠</span> Dashboard
+      </a>
+      <a href="#prescription" class="nav-item">
+        <span class="nav-icon">💊</span> Prescription
+      </a>
+    </nav>
+
+    <!-- Role badge at bottom of sidebar -->
+    <div class="sidebar-role">
+      <span class="role-badge patient">Patient</span>
+    </div>
+  </aside>
+
+  <!-- ============================================
+       MAIN CONTENT AREA
+  ============================================ -->
+  <main class="main-content">
+
+    <!-- Top bar with user info + logout -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h1>Patient Dashboard</h1>
+        <p>Your medical card &amp; prescription information</p>
+      </div>
+      <div class="topbar-actions">
+        <!-- Patient name shown after login -->
+        <span class="user-greeting">Hello, <strong id="patientName">...</strong></span>
+        <button class="btn btn-outline" onclick="handleLogout()">Logout</button>
+      </div>
+    </header>
+
+    <!-- ==========================================
+         MEDICAL CARD SECTION
+         This simulates a physical medical card
+    ========================================== -->
+    <section class="section" id="prescription">
+      <h2 class="section-title">Medical Card</h2>
+
+      <!-- Loading spinner shown while data loads -->
+      <div id="loadingState" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading your medical card...</p>
+      </div>
+
+      <!-- No prescription message (shown if none exists) -->
+      <div id="noPrescrip" class="empty-state" style="display:none;">
+        <div class="empty-icon">📋</div>
+        <h3>No Prescription Found</h3>
+        <p>Your doctor has not issued a prescription yet. Please consult your doctor.</p>
+      </div>
+
+      <!-- ========================================
+           MEDICAL CARD UI
+           Displayed once data loads from Firestore
+      ======================================== -->
+      <div id="medicalCard" class="medical-card" style="display:none;">
+
+        <!-- Card Header - looks like a real medical card -->
+        <div class="card-header-strip">
+          <div class="card-logo">⚕ MedVend</div>
+          <div class="card-type">Digital Medical Card</div>
+        </div>
+
+        <!-- Card ID and Patient Info -->
+        <div class="card-body">
+          <div class="card-info-row">
+            <div class="card-field">
+              <div class="field-label">Patient Name</div>
+              <div class="field-value" id="cardName">—</div>
+            </div>
+            <div class="card-field">
+              <div class="field-label">Medical Card ID</div>
+              <!-- Card ID shown in monospace — used by vending machine -->
+              <div class="field-value mono" id="cardID">—</div>
+            </div>
+          </div>
+
+          <div class="card-info-row">
+            <div class="card-field">
+              <div class="field-label">Email</div>
+              <div class="field-value" id="cardEmail">—</div>
+            </div>
+            <div class="card-field">
+              <div class="field-label">Last Updated</div>
+              <div class="field-value" id="cardUpdated">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Prescription Details Table -->
+        <div class="prescription-section">
+          <h3 class="prescrip-title">💊 Prescribed Medicines</h3>
+
+          <!-- Note: patient cannot edit — read only -->
+          <div class="read-only-note">🔒 Read-only — Only your doctor can update this</div>
+
+          <div class="prescrip-grid">
+            <!-- Medicine Names -->
+            <div class="prescrip-field">
+              <div class="prescrip-label">Medicine(s)</div>
+              <div class="prescrip-value" id="medicines">—</div>
+            </div>
+
+            <!-- Dosage -->
+            <div class="prescrip-field">
+              <div class="prescrip-label">Dosage</div>
+              <div class="prescrip-value" id="dosage">—</div>
+            </div>
+
+            <!-- Refill Limit -->
+            <div class="prescrip-field">
+              <div class="prescrip-label">Refill Limit</div>
+              <div class="prescrip-value" id="refillLimit">—</div>
+            </div>
+
+            <!-- Expiry Date -->
+            <div class="prescrip-field">
+              <div class="prescrip-label">Expiry Date</div>
+              <div class="prescrip-value" id="expiryDate">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- IoT Note: how vending machine uses this card -->
+        <div class="card-footer-note">
+          <strong>📡 IoT Integration:</strong> Present your Medical Card ID at the
+          vending machine scanner. The machine will verify your prescription and
+          dispense your medication automatically.
+        </div>
+
+      </div>
+      <!-- End #medicalCard -->
+
+    </section>
+
+    <!-- System Info Section -->
+    <section class="section">
+      <h2 class="section-title">How to Use the Vending Machine</h2>
+      <div class="info-steps">
+        <div class="info-step">
+          <div class="step-num">1</div>
+          <div class="step-text">Go to the nearest MedVend Vending Machine</div>
+        </div>
+        <div class="info-step">
+          <div class="step-num">2</div>
+          <div class="step-text">Scan or enter your Medical Card ID shown above</div>
+        </div>
+        <div class="info-step">
+          <div class="step-num">3</div>
+          <div class="step-text">The machine verifies your prescription via the cloud</div>
+        </div>
+        <div class="info-step">
+          <div class="step-num">4</div>
+          <div class="step-text">Sensors dispense the correct medicine automatically</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+  <!-- End .main-content -->
+
+  <!-- App JS handles auth check + Firestore data fetch -->
+  <script src="app.js"></script>
+
+</body>
+</html>

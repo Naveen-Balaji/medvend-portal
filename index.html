@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedVend Portal | Smart Medical Vending System</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body class="landing-page">
+
+  <!-- ============================================
+       NAVIGATION BAR
+  ============================================ -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <!-- Logo icon + text -->
+      <span class="logo-icon">⚕</span>
+      <span class="logo-text">MedVend</span>
+    </div>
+    <a href="login.html" class="btn btn-outline">Login</a>
+  </nav>
+
+  <!-- ============================================
+       HERO SECTION
+  ============================================ -->
+  <section class="hero">
+    <!-- Decorative background grid -->
+    <div class="grid-bg"></div>
+
+    <div class="hero-content">
+      <!-- Badge label -->
+      <div class="badge">Final Year Project — IoT + Cloud</div>
+
+      <h1 class="hero-title">
+        Smart Medical<br />
+        <span class="accent">Vending Machine</span><br />
+        Portal
+      </h1>
+
+      <p class="hero-desc">
+        A cloud-connected prescription management system enabling doctors to issue
+        digital prescriptions and patients to securely retrieve medicines via
+        sensor-based IoT dispensing.
+      </p>
+
+      <div class="hero-actions">
+        <a href="login.html" class="btn btn-primary">Get Started</a>
+        <a href="#features" class="btn btn-ghost">Learn More ↓</a>
+      </div>
+    </div>
+
+    <!-- Floating stat cards on the right -->
+    <div class="hero-visual">
+      <div class="stat-card" style="--delay:0s">
+        <div class="stat-icon">💊</div>
+        <div class="stat-label">Prescriptions</div>
+        <div class="stat-val">Digital</div>
+      </div>
+      <div class="stat-card" style="--delay:0.15s">
+        <div class="stat-icon">🔐</div>
+        <div class="stat-label">Authentication</div>
+        <div class="stat-val">Firebase</div>
+      </div>
+      <div class="stat-card" style="--delay:0.3s">
+        <div class="stat-icon">📡</div>
+        <div class="stat-label">IoT Ready</div>
+        <div class="stat-val">API Access</div>
+      </div>
+      <div class="stat-card" style="--delay:0.45s">
+        <div class="stat-icon">🏥</div>
+        <div class="stat-label">Role-Based</div>
+        <div class="stat-val">Access Control</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FEATURES SECTION
+  ============================================ -->
+  <section id="features" class="features-section">
+    <div class="section-header">
+      <h2>How It Works</h2>
+      <p>Three-component architecture: Cloud, Portal, and Vending Machine</p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="feature-num">01</div>
+        <h3>Doctor Issues Prescription</h3>
+        <p>
+          Authorized doctors log in, search for a patient by email, and create
+          or update digital prescriptions stored securely in Firebase Firestore.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-card">
+        <div class="feature-num">02</div>
+        <h3>Patient Views Medical Card</h3>
+        <p>
+          Patients log in to view their personal Medical Card ID, prescribed
+          medicines, dosage information, refill limits, and expiry dates.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="feature-num">03</div>
+        <h3>Vending Machine Dispenses</h3>
+        <p>
+          The IoT vending machine scans the patient's Medical Card ID, queries
+          the Firestore REST API, verifies the prescription, and dispenses the
+          correct medicine automatically.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       ARCHITECTURE SECTION
+  ============================================ -->
+  <section class="arch-section">
+    <div class="section-header">
+      <h2>System Architecture</h2>
+      <p>End-to-end data flow from prescription to dispensing</p>
+    </div>
+
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="arch-icon">🩺</div>
+        <div class="arch-label">Doctor</div>
+        <div class="arch-sub">Web Portal</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node highlight">
+        <div class="arch-icon">☁</div>
+        <div class="arch-label">Firebase</div>
+        <div class="arch-sub">Firestore + Auth</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-icon">🤖</div>
+        <div class="arch-label">Vending Machine</div>
+        <div class="arch-sub">IoT + Sensors</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================
+       FOOTER
+  ============================================ -->
+  <footer class="footer">
+    <p>
+      MedVend Portal &mdash; Final Year Project &copy; 2024 &mdash;
+      Built with Firebase &amp; Vanilla JS
+    </p>
+  </footer>
+
+</body>
+</html>

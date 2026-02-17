@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedVend Portal | Login</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <!-- ============================================
+       FIREBASE SDK (v9 compat mode)
+       Replace the config in app.js with YOUR Firebase project details
+  ============================================ -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="auth-page">
+
+  <!-- ============================================
+       BACK LINK
+  ============================================ -->
+  <a href="index.html" class="back-link">← Back to Home</a>
+
+  <!-- ============================================
+       LOGIN CARD
+  ============================================ -->
+  <div class="auth-container">
+    <div class="auth-card">
+
+      <!-- Header -->
+      <div class="auth-header">
+        <div class="auth-logo">⚕</div>
+        <h2>MedVend Portal</h2>
+        <p>Sign in to your account</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="auth-form" onsubmit="return false;">
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+
+        <!-- Error Message (hidden by default) -->
+        <div id="errorMsg" class="error-msg" style="display:none;"></div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="loginBtn" class="btn btn-primary btn-full" onclick="handleLogin()">
+          Sign In
+        </button>
+
+      </form>
+
+      <!-- Info note -->
+      <div class="auth-note">
+        <p>
+          🔒 Role-based access: Doctors and patients are automatically redirected
+          to their respective dashboards after login.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Load our main JS file -->
+  <script src="app.js"></script>
+
+</body>
+</html>
